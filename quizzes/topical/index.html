@@ -51,16 +51,11 @@ $(function(){
     $('#sub-nav-bar a').each(function() {
       var n = $(this); 
       var str = n.attr('href'); 
-      console.log('url: ' + url); 
-      console.log('pathMatcher ' + pathMatcher);
-      console.log('a href: ' + str); 
       if (str.indexOf(pathMatcher) > -1) {
         n['addClass']('is-active')
-        console.log('added is-active');
       }
       else {
         n['removeClass']('is-active')
-        console.log('removed is-active'); 
         }
     })
 
@@ -87,7 +82,6 @@ function loadContent(contentItem) {
 }
 
 function sanitize(string) {
-  console.log('sanitized'); 
   return string.slice(0, string.indexOf('#')); 
 }
 /*
