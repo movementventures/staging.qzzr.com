@@ -46,7 +46,7 @@ loadContent(defaultContent);
 $(function(){
   $(window).hashchange(function(){
     var url = $(location).attr('href').split( '/' );
-    var pathMatcher = url[url.length - 2]; 
+    var pathMatcher = url[url.length - 1]; 
     $('#sub-nav-bar a').each(function() {
       var n = $(this); 
       var str = n.attr('href'); 
