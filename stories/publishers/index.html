@@ -46,7 +46,8 @@ loadContent(defaultContent);
 $(function(){
   $(window).hashchange(function(){
     var url = $(location).attr('href').split( '/' );
-    var pathMatcher = url[url.length - 1]; 
+    var pathMatcher = sanitize(url[url.length - 1]); 
+
     $('#sub-nav-bar a').each(function() {
       var n = $(this); 
       var str = n.attr('href'); 
@@ -85,6 +86,10 @@ function loadContent(contentItem) {
   contentLoader.load(workingDirectory + contentItem);
 }
 
+function sanitize(string) {
+  console.log('sanitized'); 
+  return string.slice(string.indexOf('#'), string.length -1); 
+}
 /*
  * jQuery hashchange event - v1.3 - 7/21/2010
  * http://benalman.com/projects/jquery-hashchange-plugin/
