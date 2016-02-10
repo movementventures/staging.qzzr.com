@@ -45,6 +45,21 @@ loadContent(defaultContent);
 
 $(function(){
   $(window).hashchange(function(){
+    var url = $(location).attr('href').split( '/' );
+    var pathMatcher = url[url.length - 2]; 
+    $('#sub-nav-bar a').each(function() {
+      var n = $(this); 
+      var str = n.attr('href'); 
+      console.log('url: ' + url); 
+      console.log('pathMather ' + pathMather);
+      console.log('a href: ' + str); 
+      if (str.indexOf(pathMatcher) > -1)
+        n['addClass']('is-active')
+        console.log('added is-active');
+      else 
+        n['removeClass']('is-active')
+        console.log('removed is-active'); 
+    })
 
     if (!location.hash) 
       location.hash = '#' + defaultContent; 
