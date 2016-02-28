@@ -52,7 +52,8 @@ snowplow('trackPageView');
 
 ga('create', 'UA-45882503-11', 'auto');
 ga('send', 'pageview');//these handlers will be removed once the images have loaded
-window.addEventListener("DOMContentLoaded", lazyLoadImages);
+window.addEventListener("DOMContentLoaded", getImages);
+window.addEventListener("DOMContentLoaded", lazyTofuLoad);
 window.addEventListener("load", lazyLoadImages);
 window.addEventListener("resize", lazyLoadImages);
 window.addEventListener("scroll", lazyLoadImages);
@@ -62,30 +63,38 @@ function isElementInViewport (el, yOffset) {
     var rect = el.getBoundingClientRect();
     if (!yOffset)
       yOffset = 0;
-    else 
-      yOffset *= -1; 
-      console.log('top: ' + rect.top + ' bottom: ' + rect.bottom);  
+    console.log('top: ' + rect.top + ' bottom: ' + rect.bottom);  
     return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom + yOffset <= (window.innerHeight || document.documentElement.clientHeight) && 
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth) 
+        rect.bottom + yOffset <= (window.innerHeight || document.documentElement.clientHeight)
     );
 }
 
+var images = [];
+var imagesProxy = []; 
 
-function lazyLoadImages() {
-  var images = document.querySelectorAll("body img[data-src]"),
-      item;
+function getImages() {
+  var nodeList = document.querySelectorAll("body img[data-src]");
+  for(var i = nodeList.length; i--; images.unshift(nodeList[i]));
+  window.removeEventListener("DOMContentLoaded", getImages);
+}
+
+
+function lazyTofuLoad() {
   // load images that have entered the viewport
-  [].forEach.call(images, function (item) {
-    if (isElementInViewport(item, 1000)) {
+  images.forEach(function (item) {
+    if (isElementInViewport(item, -500)) {
       item.setAttribute("src", item.getAttribute("data-src"));
       item.removeAttribute("data-src");
       item.removeAttribute("style");
+      item.className += ' lazy-tofu-loaded'
+      item.className.replace('lazy-tofu-hidden','');
+    } else {
+      imagesProxy.push(item); 
     }
   });
 
+  images = imagesProxy; 
+  imagesProxy = []; 
   // if all the images are loaded, stop calling the handler
   if (images.length == 0) {
     window.removeEventListener("DOMContentLoaded", lazyLoadImages);
