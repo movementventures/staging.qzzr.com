@@ -53,19 +53,18 @@ snowplow('trackPageView');
 ga('create', 'UA-45882503-11', 'auto');
 ga('send', 'pageview');//these handlers will be removed once the images have loaded
 window.addEventListener("DOMContentLoaded", getImages);
-window.addEventListener("DOMContentLoaded", lazyTofuLoad);
-window.addEventListener("load", lazyTofuLoad);
-window.addEventListener("resize", lazyTofuLoad);
-window.addEventListener("scroll", lazyTofuLoad);
+window.addEventListener("DOMContentLoaded", throttle(lazyTofuLoad, 500));
+window.addEventListener("load", throttle(lazyTofuLoad, 500));
+window.addEventListener("scroll", throttle(lazyTofuLoad, 500));
 
 
-function isElementInViewport (el, yOffset) {
+var count = 0; 
+function isElementInViewport (el) {
     var rect = el.getBoundingClientRect();
-    if (!yOffset)
-      yOffset = 0;
-    console.log('top: ' + rect.top + ' bottom: ' + rect.bottom);  
+    count++; 
+    console.log('this is count: ' + count); 
     return (
-        rect.bottom + yOffset <= (window.innerHeight || document.documentElement.clientHeight)
+        rect.bottom -1200 <= (window.innerHeight || document.documentElement.clientHeight)
     );
 }
 
@@ -78,11 +77,11 @@ function getImages() {
   window.removeEventListener("DOMContentLoaded", getImages);
 }
 
-
 function lazyTofuLoad() {
+  console.log('lazyTofuLoad called'); 
   // load images that have entered the viewport
   images.forEach(function (item) {
-    if (isElementInViewport(item, -500)) {
+    if (isElementInViewport(item)) {
       item.setAttribute("src", item.getAttribute("data-src"));
       item.removeAttribute("data-src");
       item.removeAttribute("style");
@@ -95,13 +94,26 @@ function lazyTofuLoad() {
 
   images = imagesProxy; 
   imagesProxy = []; 
+  console.log('image length ' + images.length); 
   
+  window.removeEventListener("load", lazyTofuLoad);
   // if all the images are loaded, stop calling the handler
   if (images.length == 0) {
     window.removeEventListener("DOMContentLoaded", lazyTofuLoad);
-    window.removeEventListener("load", lazyTofuLoad);
-    window.removeEventListener("resize", lazyTofuLoad);
     window.removeEventListener("scroll", lazyTofuLoad);
+  }
+}
+
+function throttle (callback, limit) {
+  var wait = false;                  
+  return function () {               
+    if (!wait) {                   
+        callback.call();           
+        wait = true;               
+        setTimeout(function () {   
+            wait = false;          
+        }, limit);
+    }
   }
 }</script><body><img src=https://api.movementventures.com/_uid.gif width=0 height=0 style="display:none;visibility:hidden"><header class="nav-bar nav-bar-qzzr"><a href="/" class=nav-bar-logo><img src=https://d9hjmg33hjug6.cloudfront.net/859de0638069f4b00d65be7af5e474c5.png class="nav-bar-logo-image"></a><nav class=nav-bar-links><a class="nav-bar-link nav-bar-link-home" href="/">Home</a><a class=nav-bar-link href=/tour>Tour</a><span class="popover js-popover popover-nav"><a class="nav-bar-link popover-trigger js-popover-trigger">Uses</a><ul class="popover-content popover-content-nav"><li class=popover-item-label-static><span>Qzzr for:</span></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/uses/publishers>Publishers</a></div></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/uses/marketers>Marketers</a></div></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/uses/agencies>Agencies</a></div></li><li class=popover-item-label-static><span>Qzzr to:</span></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/uses/drive-social-traffic>Drive social traffic</a></div></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/uses/generate-qualified-leads>Generate qualified leads</a></div></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/uses/present-targeted-offers>Present targeted offers</a></div></li></ul></span><a class=nav-bar-link href=/pricing>pricing</a><a class=nav-bar-link href="/stories/publishers/">stories</a><span class="popover js-popover popover-nav"><a class="nav-bar-link popover-trigger js-popover-trigger">about</a><ul class="popover-content popover-content-nav"><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/about/our-team>Our team</a></div></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/about/press>Press</a></div></li><li class=popover-item><div class=popover-item-content><a class=popover-item-label href=/about/contact-us>Contact</a></div></li></ul></span><a href=http://blog.boombox.com class=nav-bar-link>blog</a></nav><div class=nav-bar-actions><div class=nav-bar-action><a href=/login class="nav-bar-link nav-bar-link-login">Log in</a></div><div class=nav-bar-action><a href=/signup/fi9vYXV0aC9jbGllbnRzL3F6enI onclick="ga('send', 'event', 'Signup', 'Create a quiz', 'Header')" data-text="It's free" class="buttonn buttonn-green buttonn-callout"><i class="icon icon-compose m-8-r"></i><span>Create a quiz</span></a></div></div></header><div class=lazy-container></div><div class="grid grid-justify-center grid-900-column-reverse m-72-st"><div class="grid-item grid-item-6 grid-item-1200-7 grid-item-900-12 content-loader-container"><div data-object={&quot;path&quot;:&quot;quizzes/marketing&quot;,&quot;defaultContent&quot;:&quot;quiz-154047&quot;} class=js-content-loader></div></div><div class="grid-item grid-item-4 grid-item-1200-5 grid-item-900-12"><h1 class=heading-huge>Making world class quizzes is effortless and affordable</h1><p class=paragraph-sub>Drive traffic, capture leads, and enrich your website without having to hire developers. Delivering premium and diverse content to your audiences is made easy with our myriad of quiz types.</p><div class=text-center><a href=../tour/index.html target=_blank class="buttonn buttonn-green buttonn-huge m-18-t button button-large button-primary">Take the tour</a><script src=//dcc4iyjchzom0.cloudfront.net/widget/loader.js async></script></div></div></div><div class="grid grid-justify-center"><div id=hash-loader class="grid-nested-item grid-item-10 grid-item-1200-12 m-72-sb"><div class=grid-nested><div class="grid-item grid-item-3 grid-item-800-6 grid-item-600-12"><a href=#quiz-154047 data-content=quiz-154047 class="card card-border contentent-viewer-tab js-content-item quiz-154047 card card-border content-viewer-tab js-content-item quiz-154047"><div style="background-image: url(https://movement-prod.imgix.net/uploads/60/d530df857415a4caec96f35b567286/business_cubicles.jpg?fit=min&amp;w=888)" class="card-image card-image-tab"></div><span class="card-header card-tab-header">Do you have a jargon problem?</span></a></div><div class="grid-item grid-item-3 grid-item-800-6 grid-item-600-12"><a href=#quiz-03 data-content=quiz-03 class="card card-border contentent-viewer-tab js-content-item quiz-03 card card-border content-viewer-tab js-content-item quiz-03"><div style="background-image: url(https://movement-prod.imgix.net/quiz/3/1383932225_large.jpg?fit=min&amp;w=888)" class="card-image card-image-tab"></div><span class="card-header card-tab-header">Are You A Business Jargonaut?</span></a></div><div class="grid-item grid-item-3 grid-item-800-6 grid-item-600-12"><a href=#quiz-3434 data-content=quiz-3434 class="card card-border contentent-viewer-tab js-content-item quiz-3434 card card-border content-viewer-tab js-content-item quiz-3434"><div style="background-image: url(https://movement-prod.imgix.net/transloadit/09/62a270c18f11e3bc4825d5df10b05c/shutterstock_149463557.jpg?fit=min&amp;w=888)" class="card-image card-image-tab"></div><span class="card-header card-tab-header">What is YourContent Marketing IQ?</span></a></div><div class="grid-item grid-item-3 grid-item-800-6 grid-item-600-12"><a href=#quiz-6081 data-content=quiz-6081 class="card card-border contentent-viewer-tab js-content-item quiz-6081 card card-border content-viewer-tab js-content-item quiz-6081"><div style="background-image: url(//d4vp3733ickae.cloudfront.net/1041x600/de514d/fff.png&amp;text=+)" class="card-image card-image-tab"></div><span class="card-header card-tab-header">Would Your Content Go Viral?</span></a></div></div></div></div><header class=footer-actions><div class=footer-action><p class=footer-action-heading>Qzzr makes it easy to create quizzes for your site</p><a href=/pricing class="buttonn buttonn-green m-36-l"><span class=buttonn-label>Get Pricing</span></a></div></header><footer class=footer><div class=footer-body><div class=footer-section><h3 class=footer-section-heading>Overview</h3><ul class=footer-section-links><li><a href="/tour/" class=footer-section-link>Tour</a></li><li><a href=/uses/publishers class=footer-section-link>Uses</a></li><li><a href="/pricing/" class=footer-section-link>Pricing</a></li><li><a href=/stories/publishers class=footer-section-link>Stories</a></li><li><a href=/about/our-team class=footer-section-link>About</a></li><li><a href="http://blog.boombox.com/" target=_blank class=footer-section-link>Blog</a></li></ul></div><div class=footer-section><h3 class=footer-section-heading>Qzzr for</h3><ul class=footer-section-links><li><a href=/uses/publishers class=footer-section-link>Publishers</a></li><li><a href=/uses/marketers class=footer-section-link>Marketers</a></li><li><a href=/uses/agencies class=footer-section-link>Agencies</a></li></ul></div><div class=footer-section><h3 class=footer-section-heading>Qzzr to</h3><ul class=footer-section-links><li><a href=/uses/drive-social-traffic class=footer-section-link>Drive social traffic</a></li><li><a href=/uses/generate-qualified-leads class=footer-section-link>Generate qualified leads</a></li><li><a href=/uses/present-targeted-offers class=footer-section-link>Present targeted offers</a></li></ul></div><div class=footer-section><h3 class=footer-section-heading>Useful stuff</h3><ul class=footer-section-links><li><a href=/commonly-asked-questions class=footer-section-link>Commonly asked questions</a></li><li><a href="http://go.qzzr.com/ebook-are-you-a-qwizard/" target=_blank class=footer-section-link>Ebook: Are You a Qwizard?</a></li><li><a href="http://blog.boombox.com/killer-techniques-behind-world-class-quizzes/" target=_blank class=footer-section-link>Webinar: Killer Techniques of World-Class Quizzes</a></li><li><a href="http://blog.boombox.com/video-create-outcome-quiz/" target=_blank class=footer-section-link>How to create an outcome quiz</a></li><li><a href="http://blog.boombox.com/video-create-graded-quiz/" target=_blank class=footer-section-link>How to create a graded quiz</a></li><li><a href="http://blog.boombox.com/make-quiz-like-buzzfeed/" target=_blank class=footer-section-link>Create a quiz like BuzzFeed</a></li><li><a href="http://blog.boombox.com/images-qzzr/" target=_blank class=footer-section-link>Images & Qzzr</a></li><li><a href=/brand-assets class=footer-section-link>Brand assets</a></li></ul></div><div class=footer-section><h3 class=footer-section-heading>Need help?</h3><ul class=footer-section-links><li><a href="http://go.qzzr.com/request-your-demo/" target=_blank class=footer-section-link>Request a demo</a></li><li><a href="http://go.qzzr.com/custom-quiz/" target=_blank class=footer-section-link>Custom quiz creation</a></li><li><a href="http://go.qzzr.com/campaign-management/" target=_blank class=footer-section-link>Campaign management</a></li><li><a href=/about/contact-us class=footer-section-link>Contact us</a></li></ul></div></div><div class=footer-bottom><div class=footer-copyright><p style=color:#fff disabled class="footer-fine-print footer-fine-print-link footer-fine-print-item">Copyright 2016 Qzzr</p><ul class=footer-fine-print><li class=footer-fine-print-item><a href=/terms-of-service class=footer-fine-print-link>Terms of Service</a></li><li class="footer-fine-print-item footer-fine-print-item-middot">·</li><li class=footer-fine-print-item><a href="/privacy-policy/" class=footer-fine-print-link>Privacy Policy</a></li><li class="footer-fine-print-item footer-fine-print-item-middot">·</li><li class=footer-fine-print-item><a href=/content-guidelines class=footer-fine-print-link>Content Guidelines</a></li></ul></div><div class=footer-social-media><a href=https://www.facebook.com/pages/QZZR/200008303516674 target=_blank class="m-18-l icon icon-social icon-facebook"></a><a href=https://twitter.com/Qzzr_ target=_blank class="m-18-l icon icon-social icon-twitter"></a><a href=https://www.linkedin.com/company/qzzr target=_blank class="m-18-l icon icon-social icon-linkedin"></a></div></div></footer><script>var contentLoader = $('.js-content-loader'); 
 var loaderData = contentLoader.data('object');
