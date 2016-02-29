@@ -51,54 +51,51 @@ snowplow('trackPageView');
 })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
 ga('create', 'UA-45882503-11', 'auto');
-ga('send', 'pageview');//these handlers will be removed once the images have loaded
-window.addEventListener("DOMContentLoaded", getImages);
-window.addEventListener("DOMContentLoaded", throttle(lazyTofuLoad, 500));
-window.addEventListener("load", throttle(lazyTofuLoad, 500));
-window.addEventListener("scroll", throttle(lazyTofuLoad, 500));
-
+ga('send', 'pageview');window.addEventListener("DOMContentLoaded", getImages);
+window.addEventListener("load", throttle(lazyTofuLoad, 250));
+window.addEventListener("scroll", throttle(lazyTofuLoad, 250));
 
 var count = 0; 
-function isElementInViewport (el) {
-    var rect = el.getBoundingClientRect();
+function isElementInViewport (item) {
     count++; 
     console.log('this is count: ' + count); 
     return (
-        rect.bottom -1200 <= (window.innerHeight || document.documentElement.clientHeight)
+        item.getBoundingClientRect().top <= (window.innerHeight || document.documentElement.clientHeight)
     );
 }
 
-var images = [];
-var imagesProxy = []; 
+var imageData = {};
 
 function getImages() {
-  var nodeList = document.querySelectorAll("body img[data-src]");
-  for(var i = nodeList.length; i--; images.unshift(nodeList[i]));
+  var nodeList = document.querySelectorAll('img[data-src]') 
+  for(var i = 0; i < nodeList.length; i++)
+    imageData[i] = nodeList[i];
   window.removeEventListener("DOMContentLoaded", getImages);
+  window.addEventListener("DOMContentLoaded", throttle(lazyTofuLoad, 250));
 }
 
+var propCount = 0; 
 function lazyTofuLoad() {
   console.log('lazyTofuLoad called'); 
-  // load images that have entered the viewport
-  images.forEach(function (item) {
+  for (key in imageData) {
+      var item = imageData[key]; 
+      propCount ++; 
     if (isElementInViewport(item)) {
+      console.log('rect passed'); 
       item.setAttribute("src", item.getAttribute("data-src"));
       item.removeAttribute("data-src");
       item.removeAttribute("style");
       item.className += ' lazy-tofu-loaded'
       item.className.replace('lazy-tofu-hidden','');
-    } else {
-      imagesProxy.push(item); 
+      delete imageData[key]
     }
-  });
+  };
 
-  images = imagesProxy; 
-  imagesProxy = []; 
-  console.log('image length ' + images.length); 
+  console.log('object prop ' + propCount); 
+  propCount = 0; 
   
   window.removeEventListener("load", lazyTofuLoad);
-  // if all the images are loaded, stop calling the handler
-  if (images.length == 0) {
+  if (imageData.length == 0) {
     window.removeEventListener("DOMContentLoaded", lazyTofuLoad);
     window.removeEventListener("scroll", lazyTofuLoad);
   }
