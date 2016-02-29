@@ -51,14 +51,13 @@ snowplow('trackPageView');
 })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
 ga('create', 'UA-45882503-11', 'auto');
-ga('send', 'pageview');window.addEventListener("DOMContentLoaded", getImages);
+ga('send', 'pageview');</script><script>window.addEventListener("DOMContentLoaded", getImages);
 window.addEventListener("load", throttle(lazyTofuLoad, 333));
 window.addEventListener("scroll", throttle(lazyTofuLoad, 333));
 
 var count = 0; 
 function isElementInViewport (item) {
     count++; 
-    console.log('this is count: ' + count); 
     return (
         item.getBoundingClientRect().top - 400 <= (window.innerHeight || document.documentElement.clientHeight)
     );
@@ -76,12 +75,10 @@ function getImages() {
 
 var propCount = 0; 
 function lazyTofuLoad() {
-  console.log('lazyTofuLoad called'); 
   for (key in imageData) {
       var item = imageData[key]; 
       propCount ++; 
     if (isElementInViewport(item)) {
-      console.log('rect passed'); 
       item.setAttribute("src", item.getAttribute("data-src"));
       item.removeAttribute("data-src");
       item.className += ' lazy-tofu-loaded'
@@ -90,7 +87,6 @@ function lazyTofuLoad() {
     }
   };
 
-  console.log('object prop ' + propCount); 
   propCount = 0; 
   
   window.removeEventListener("load", lazyTofuLoad);
